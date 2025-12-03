@@ -1,0 +1,13 @@
+🛠️ Instalação
+
+Colocar a pasta nordlab_dispatch em:
+resources/[nordlab]
+
+Adicionar ao server.cfg:
+
+ensure nordlab_dispatch
+
+
+Configurar o config.lua conforme o teu servidor.
+
+Reiniciar o servidor.
