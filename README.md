@@ -88,19 +88,19 @@ O dispatch mostra **apenas o incidente** no mapa:
 
 ---
 
-🛡️ Segurança
+### 🛡️ Segurança
 
-Anti-spam de alertas
-Validação de coordenadas
-Proteção contra triggers maliciosos
-Throttles individuais por jogador
+- Anti-spam de alertas
+- Validação de coordenadas
+- Proteção contra triggers maliciosos
+- Throttles individuais por jogador
 
-💼 Créditos
+### 💼 Créditos
 
-Desenvolvido por: Nord Lab
-Produzido para: Noctavia Roleplay
-UI Design: Nord OS Team
-Discord: https://discord.gg/9ZxKB4cs8p
+- Desenvolvido por: Nord Lab
+- Produzido para: Noctavia Roleplay
+- UI Design: Nord OS Team
+- Discord: https://discord.gg/9ZxKB4cs8p
 ## 🧩 Integração com Scripts Externos
 
 Qualquer script pode enviar alertas para o dispatch:
