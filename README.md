@@ -1,116 +1,120 @@
 # 📡 Nord Dispatch System — Nord Lab  
-Sistema de Dispatch Inteligente para FiveM (QBCore / ESX)
+Intelligent Dispatch System for FiveM (QBCore / ESX)
 
 ---
 
-## 📌 Descrição Geral
+## 📌 General Description
 
-O **Nord Dispatch System**, desenvolvido pela **Nord Lab**, é um sistema leve, rápido e profissional de gestão de **alertas automáticos** e **incidentes in-game**.
+The **Nord Dispatch System**, developed by **Nord Lab**, is a lightweight, fast, and professional system for handling **automatic alerts** and **in-game incidents**.
 
-Criado para complementar qualquer MDT ou funcionar isoladamente, o dispatch fornece:
+Designed to complement any MDT or run independently, the dispatch provides:
 
-- Alertas claros
-- Sons personalizados
-- Localização do incidente no mapa
-- Integração com scripts externos
-- Compatibilidade QBCore 100%
-- ESX Em desenvolvimento
-- Para uma melhor performance a nivel de gestao e aconcelhavel o uso do mdt
+- Clear alert visualization  
+- Custom sounds  
+- Incident location on the map  
+- Integration with external scripts  
+- Full QBCore compatibility (100%)  
+- ESX support currently in development  
+- For best performance and management features, using an MDT is recommended  
 
-Foi concebido para máxima:
+Built with a focus on:
 
-- **Simplicidade**  
-- **Velocidade**  
-- **Realismo sem sobrecarregar UI**  
-- **Compatibilidade total** com qualquer servidor RP  
+- **Simplicity**  
+- **Speed**  
+- **Realism without clutter**  
+- **Full compatibility** with any RP server  
 
 ---
 
-## ✨ Funcionalidades Principais
+## ✨ Main Features
 
-### 🔔 Alertas Automáticos
+### 🔔 Automatic Alerts
 
-O dispatch recebe e exibe alertas de:
+The dispatch receives and displays alerts for:
 
-- Tiros disparados  
-- Roubo de veículo  
+- Shots fired  
+- Vehicle theft  
 - Carjacking  
-- Assalto a loja/banco  
-- Jogador ferido / inconsciente  
-- Paramédico abatido  
-- Oficial abatido  
-- Acidentes de viação  
-- Alertas customizados enviados via evento  
+- Store/bank robbery  
+- Injured/unconscious player  
+- Downed paramedic  
+- Downed officer  
+- Traffic accidents  
+- Custom alerts triggered via events  
 
-Cada alerta inclui:
+Each alert includes:
 
-- Tipo do incidente  
-- Descrição  
-- Coordenadas  
-- Som específico  
-- Prioridade  
-- Tempo desde o alerta  
-
----
-
-### 🗺️ Localização no Mapa
-
-O dispatch mostra **apenas o incidente** no mapa:
-
-- Marcador no local do alerta  
-- Zoom automático  
-- Ícone correspondente ao tipo do alerta  
-
-> ❗ **Não** mostra unidades, patrulhas ou agentes — essas funções pertencem ao MDT.
+- Incident type  
+- Description  
+- Coordinates  
+- Dedicated sound  
+- Priority level  
+- Time since the alert triggered  
 
 ---
 
-### 🔊 Sistema de Notificações
+### 🗺️ Map Location
 
-- Notificação visual por alerta  
-- Sons customizados por tipo  
-- Stack de múltiplos alertas  
-- Destaque por prioridade  
-- Fade automático  
-- Limpeza automática de alertas antigos  
+The dispatch shows **only the incident** on the map:
 
----
+- Marker at the alert location  
+- Automatic zoom  
+- Icon based on alert type  
 
-### 🎨 Interface do Dispatch
-
-- Layout moderno estilo CAD real  
-- Painel minimalista  
-- Visualização rápida de cada alerta  
-- Cores organizadas por categoria  
-- Modo escuro  
-- Animações suaves  
-- UI adaptável a qualquer resolução  
+> ❗ **Does NOT** show units, patrols, or officers — these features belong to the MDT.
 
 ---
 
-### 🛡️ Segurança
+### 🔊 Notification System
 
-- Anti-spam de alertas
-- Validação de coordenadas
-- Proteção contra triggers maliciosos
-- Throttles individuais por jogador
+- Visual alert notifications  
+- Custom sounds per alert type  
+- Supports multiple alerts at the same time  
+- Priority-based highlighting  
+- Automatic fade-out  
+- Automatic cleanup of old alerts  
 
-### 💼 Créditos
+---
 
-- Desenvolvido por: Nord Lab
-- Produzido para: Noctavia Roleplay
-- UI Design: Nord OS Team
-- Discord: https://discord.gg/9ZxKB4cs8p
-## 🧩 Integração com Scripts Externos
+### 🎨 Dispatch Interface
 
-Qualquer script pode enviar alertas para o dispatch:
+- Modern CAD-style layout  
+- Minimalist panel  
+- Quick incident overview  
+- Color-coded categories  
+- Dark mode  
+- Smooth animations  
+- Responsive UI for all screen sizes  
 
-### ➤ Enviar alerta personalizado
+---
+
+### 🛡️ Security
+
+- Anti-spam alert protection  
+- Coordinate validation  
+- Protection against malicious triggers  
+- Per-player throttles  
+
+---
+
+### 💼 Credits
+
+- Developed by: **Nord Lab**  
+- Created for: **Noctavia Roleplay**  
+- UI Design: **Nord OS Team**  
+- Discord: https://discord.gg/9ZxKB4cs8p  
+
+---
+
+## 🧩 Integration With External Scripts
+
+Any script can send alerts to the dispatch:
+
+### ➤ Send a custom alert
 ```lua
 TriggerEvent("nord_dispatch:add", {
     type    = "custom",
-    msg     = "Atividade suspeita detectada",
+    msg     = "Suspicious activity detected",
     coords  = vector3(100.2, -203.5, 54.1),
     priority = 2
 })
-
