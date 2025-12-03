@@ -101,4 +101,17 @@ TriggerEvent("nord_dispatch:add", {
     priority = 2
 })
 
+🛡️ Segurança
+
+Anti-spam de alertas
+Validação de coordenadas
+Proteção contra triggers maliciosos
+Throttles individuais por jogador
+
+💼 Créditos
+
+Desenvolvido por: Nord Lab
+Produzido para: Noctavia Roleplay
+UI Design: Nord OS Team
+Discord: https://discord.gg/9ZxKB4cs8p
 
