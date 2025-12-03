@@ -88,19 +88,6 @@ O dispatch mostra **apenas o incidente** no mapa:
 
 ---
 
-## 🧩 Integração com Scripts Externos
-
-Qualquer script pode enviar alertas para o dispatch:
-
-### ➤ Enviar alerta personalizado
-```lua
-TriggerEvent("nord_dispatch:add", {
-    type    = "custom",
-    msg     = "Atividade suspeita detectada",
-    coords  = vector3(100.2, -203.5, 54.1),
-    priority = 2
-})
-
 🛡️ Segurança
 
 Anti-spam de alertas
@@ -114,4 +101,16 @@ Desenvolvido por: Nord Lab
 Produzido para: Noctavia Roleplay
 UI Design: Nord OS Team
 Discord: https://discord.gg/9ZxKB4cs8p
+## 🧩 Integração com Scripts Externos
+
+Qualquer script pode enviar alertas para o dispatch:
+
+### ➤ Enviar alerta personalizado
+```lua
+TriggerEvent("nord_dispatch:add", {
+    type    = "custom",
+    msg     = "Atividade suspeita detectada",
+    coords  = vector3(100.2, -203.5, 54.1),
+    priority = 2
+})
 
