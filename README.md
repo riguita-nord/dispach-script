@@ -1,5 +1,5 @@
 # 📡 Nord Dispatch System — Nord Lab  
-Intelligent Dispatch System for FiveM (QBCore / ESX)
+Intelligent Dispatch System for FiveM (QBCore)
 
 ---
 
