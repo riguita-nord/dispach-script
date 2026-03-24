@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8" />
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            document.documentElement.style.background = "transparent";
+            document.body.style.background = "transparent";
+        });
+    </script>
+
+    <link rel="stylesheet" href="style.css" />
+</head>
+
+<body style="background: transparent !important;">
+
+    <audio id="dispatchSound"></audio>
+
+    <div id="dispatchBox" class="dispatch-box" style="display:none;">
+
+        <div class="dispatch-icon" id="dispatchIcon">🚨</div>
+
+        <div class="dispatch-text">
+            <div class="dispatch-title" id="dispatchTitle"></div>
+            <div class="dispatch-desc" id="dispatchDesc"></div>
+
+            <!-- APENAS A TECLA -->
+            <div class="dispatch-keybox">
+                <span class="dispatch-key" id="dispatchKey">E</span>
+                <span class="dispatch-key-label">Ir para localização</span>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="script.js"></script>
+
+</body>
+</html>

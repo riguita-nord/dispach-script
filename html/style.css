@@ -1,0 +1,116 @@
+/* ============================================================
+   DISPATCH — UI PREMIUM (SEM FUNDO PRETO)
+============================================================ */
+html, body {
+    margin: 0;
+    padding: 0;
+    background: transparent !important;
+    overflow: hidden; /* evita barras */
+}
+
+/* ============================================================
+   POPUP GRANDE (CANTO SUPERIOR DIREITO)
+============================================================ */
+.dispatch-box {
+    position: fixed;
+    top: 24px;
+    right: 24px;
+
+    display: none;
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 14px;
+
+    padding: 18px 24px;
+    background: rgba(15, 28, 52, 0.78);
+
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+
+    border-radius: 0px;
+    border-left: 8px solid #2fa7ff;
+
+    color: #ffffff;
+    z-index: 99999;
+
+    opacity: 0;
+    transform: translateY(-15px);
+}
+
+/* Animação de entrada */
+.dispatch-box.animate {
+    animation: dispatchSlide 0.45s ease forwards;
+}
+
+@keyframes dispatchSlide {
+    0%   { opacity: 0;   transform: translateY(-15px); }
+    55%  { opacity: .92; transform: translateY(2px); }
+    100% { opacity: 1;   transform: translateY(0); }
+}
+
+/* Ícone */
+.dispatch-icon {
+    font-size: 40px;
+    padding: 8px 10px;
+
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.18);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Container interno do texto */
+.dispatch-text {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+/* Título */
+.dispatch-title {
+    font-size: 19px;
+    font-weight: 800;
+    color: #e9f3ff;
+    margin: 0;
+    padding: 0;
+}
+
+/* Descrição */
+.dispatch-desc {
+    font-size: 15px;
+    color: #d4e4f9;
+    margin: 0;
+    padding: 0;
+    opacity: 0.95;
+}
+
+/* ============================================================
+   TECLA CONFIGURÁVEL
+============================================================ */
+.dispatch-keybox {
+    margin-top: 8px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.dispatch-key {
+    background: rgba(47, 167, 255, 0.25);
+    color: #fff;
+
+    font-size: 15px;
+    font-weight: 700;
+
+    padding: 6px 10px;
+    border-radius: 6px;
+
+    border: 1px solid rgba(47, 167, 255, 0.55);
+}
+
+.dispatch-key-label {
+    font-size: 14px;
+    color: #c9e6ff;
+    opacity: 0.9;
+}
