@@ -2,6 +2,9 @@ local resourceName = GetCurrentResourceName()
 local currentVersion = GetResourceMetadata(resourceName, "version", 0) or "0.0.0"
 local missingEndpointWarned = false
 
+-- URL interna de verificação de versão (não exposta na config)
+local VERSION_ENDPOINT = "https://api.github.com/repos/riguita-nord/nord_dispach/releases/latest"
+
 local function logInfo(msg)
     print(("^5[%s][Update]^0 %s"):format(resourceName, msg))
 end
@@ -96,7 +99,7 @@ local function performUpdateCheck(showNoUpdate)
         return
     end
 
-    local endpoint = trim(updates.VersionEndpoint or "")
+    local endpoint = trim(VERSION_ENDPOINT)
     if endpoint == "" then
         if not missingEndpointWarned then
             missingEndpointWarned = true

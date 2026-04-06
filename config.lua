@@ -10,9 +10,7 @@ Config.Updates = {
     Enabled = true,
     CheckOnStart = true,
     CheckIntervalMinutes = 180,
-    CommandName = "dispatch_update",
-    -- URL que devolve a versão mais recente (JSON com {"version":"x.y.z"} ou texto simples "x.y.z")
-    VersionEndpoint = ""
+    CommandName = "dispatch_update"
 }
 
 -- ON / OFF da integração do dispatch com o Nord MDT
