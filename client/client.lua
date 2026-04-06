@@ -1,21 +1,27 @@
-local QBCore = exports['qb-core']:GetCoreObject()
-
 ------------------------------------------------------
 -- 0. VARIÁVEIS GLOBAIS
 ------------------------------------------------------
 local activeAlerts = {}
 local stealingCooldown = false
+local activeAlertCoords = {}
 
 local dispatchPopupActive = false
 local lastDispatchCoords = nil
+local dispatchPopupIncidentId = nil
+
+local carTheftTrackingState = {
+    active = false,
+    incidentId = nil,
+    expectedPlate = nil
+}
 
 ------------------------------------------------------
 -- 1. TRABALHOS PERMITIDOS (config.lua)
 ------------------------------------------------------
 local function PlayerHasDispatchJob()
-    local job = QBCore.Functions.GetPlayerData().job
-    if not job then return false end
-    return Config.AllowedJobs[job.name] == true
+    local jobName = ClientFrameworkBridge.GetPlayerJobName()
+    if not jobName then return false end
+    return Config.AllowedJobs[jobName] == true
 end
 
 ------------------------------------------------------
@@ -41,12 +47,16 @@ local function GetCurrentStreet(coords)
     return GetStreetNameFromHashKey(h) or "Localização Desconhecida"
 end
 
+local function NormalizePlate(plate)
+    return tostring(plate or ""):gsub("%s+", ""):upper()
+end
+
 
 ------------------------------------------------------
 -- 4. RECEBER ALERTA (NUI + SOM + BLIP + TECLA)
 ------------------------------------------------------
-RegisterNetEvent("myDispatch:ReceiveAlert")
-AddEventHandler("myDispatch:ReceiveAlert", function(data)
+RegisterNetEvent("nord_dispach:ReceiveAlert")
+AddEventHandler("nord_dispach:ReceiveAlert", function(data)
 
     -- ✓ Segurança extra: cliente só vê se for trabalho permitido
     if not PlayerHasDispatchJob() then return end
@@ -63,6 +73,7 @@ AddEventHandler("myDispatch:ReceiveAlert", function(data)
 
     dispatchPopupActive = true
     lastDispatchCoords = data.coords
+    dispatchPopupIncidentId = data.id
 
     -- Enviar popup
     SendNUIMessage({
@@ -86,7 +97,6 @@ AddEventHandler("myDispatch:ReceiveAlert", function(data)
     SetBlipSprite(blip, alert.blip)
     SetBlipScale(blip, 1.35)
     SetBlipColour(blip, alert.color)
-
     BeginTextCommandSetBlipName("STRING")
     AddTextComponentString(alert.title)
     EndTextCommandSetBlipName(blip)
@@ -94,14 +104,105 @@ AddEventHandler("myDispatch:ReceiveAlert", function(data)
     PulseBlip(blip)
 
     activeAlerts[data.id] = blip
+    activeAlertCoords[data.id] = data.coords
 
     -- remover após tempo
     SetTimeout((alert.timeout or 30) * 1000, function()
         if activeAlerts[data.id] then
             RemoveBlip(activeAlerts[data.id])
             activeAlerts[data.id] = nil
+            activeAlertCoords[data.id] = nil
+
+            if dispatchPopupIncidentId == data.id then
+                dispatchPopupIncidentId = nil
+            end
         end
     end)
+end)
+
+-- Compatibilidade legada
+RegisterNetEvent("myDispatch:ReceiveAlert")
+AddEventHandler("myDispatch:ReceiveAlert", function(data)
+    TriggerEvent("nord_dispach:ReceiveAlert", data)
+end)
+
+RegisterNetEvent("nord_dispach:UpdateTrackedAlert")
+AddEventHandler("nord_dispach:UpdateTrackedAlert", function(id, coords)
+    if not id or not coords then return end
+
+    local blip = activeAlerts[id]
+    if not blip then return end
+
+    SetBlipCoords(blip, coords.x + 0.0, coords.y + 0.0, coords.z + 0.0)
+    activeAlertCoords[id] = coords
+
+    if dispatchPopupIncidentId == id then
+        lastDispatchCoords = coords
+    end
+end)
+
+-- Compatibilidade legada
+RegisterNetEvent("myDispatch:UpdateTrackedAlert")
+AddEventHandler("myDispatch:UpdateTrackedAlert", function(id, coords)
+    TriggerEvent("nord_dispach:UpdateTrackedAlert", id, coords)
+end)
+
+RegisterNetEvent("nord_dispach:StartCarTheftTracking")
+AddEventHandler("nord_dispach:StartCarTheftTracking", function(incidentId, expectedPlate)
+    if not incidentId then return end
+
+    carTheftTrackingState.active = true
+    carTheftTrackingState.incidentId = incidentId
+    carTheftTrackingState.expectedPlate = NormalizePlate(expectedPlate)
+
+    CreateThread(function()
+        local startedAt = GetGameTimer()
+        local lostTicks = 0
+
+        while carTheftTrackingState.active and carTheftTrackingState.incidentId == incidentId do
+            Wait(2000)
+
+            local ped = PlayerPedId()
+            local veh = GetVehiclePedIsIn(ped, false)
+
+            if veh ~= 0 and GetPedInVehicleSeat(veh, -1) == ped then
+                local plateNow = NormalizePlate(GetVehicleNumberPlateText(veh))
+                local expect = carTheftTrackingState.expectedPlate
+
+                if expect == "" or plateNow == expect then
+                    local coords = GetEntityCoords(veh)
+
+                    TriggerServerEvent("nord_dispach:UpdateCarTheftTracker", incidentId, {
+                        street = GetCurrentStreet(coords),
+                        coords = coords
+                    })
+
+                    lostTicks = 0
+                else
+                    lostTicks = lostTicks + 1
+                end
+            else
+                lostTicks = lostTicks + 1
+            end
+
+            if lostTicks >= 5 or (GetGameTimer() - startedAt) > 180000 then
+                TriggerServerEvent("nord_dispach:StopCarTheftTracker", incidentId)
+                break
+            end
+        end
+
+        if carTheftTrackingState.incidentId == incidentId then
+            carTheftTrackingState.active = false
+            carTheftTrackingState.incidentId = nil
+            carTheftTrackingState.expectedPlate = nil
+        end
+    end)
+end)
+
+-- Compatibilidade legada
+RegisterNetEvent("myDispatch:StartCarTheftTracking")
+AddEventHandler("myDispatch:StartCarTheftTracking", function(incidentId, expectedPlate)
+    TriggerEvent("nord_dispach:StartCarTheftTracking", incidentId, expectedPlate)
 end)
 
 
@@ -124,7 +225,7 @@ CreateThread(function()
             if veh ~= 0 then
                 local coords = GetEntityCoords(ped)
 
-                TriggerServerEvent("myDispatch:CarTheftAlert", {
+                TriggerServerEvent("nord_dispach:CarTheftAlert", {
                     plate  = GetVehicleNumberPlateText(veh),
                     model  = GetDisplayNameFromVehicleModel(GetEntityModel(veh)),
                     street = GetCurrentStreet(coords),
@@ -163,7 +264,7 @@ CreateThread(function()
             local s1 = GetStreetNameAtCoord(coords.x, coords.y, coords.z)
             local street = GetStreetNameFromHashKey(s1)
 
-            TriggerServerEvent("myDispatch:ShotsFiredAuto", {
+            TriggerServerEvent("nord_dispach:ShotsFiredAuto", {
                 street = street or "Localização Desconhecida",
                 coords = coords
             })
@@ -201,7 +302,7 @@ CreateThread(function()
             local street = GetStreetNameFromHashKey(s1)
 
             -- Job do jogador
-            local job = QBCore.Functions.GetPlayerData().job.name
+            local job = ClientFrameworkBridge.GetPlayerJobName() or "unemployed"
 
             ------------------------------------------------------
             -- CAUSA DA MORTE
@@ -238,7 +339,7 @@ CreateThread(function()
             end
 
 
-            TriggerServerEvent("myDispatch:PlayerDeathAlert", {
+            TriggerServerEvent("nord_dispach:PlayerDeathAlert", {
                 street = street,
                 coords = coords,
                 job    = job,
@@ -275,7 +376,7 @@ CreateThread(function()
             local s1 = GetStreetNameAtCoord(coords.x, coords.y, coords.z)
             local street = GetStreetNameFromHashKey(s1)
 
-            TriggerServerEvent("myDispatch:PhysicalViolenceAlert", {
+            TriggerServerEvent("nord_dispach:PhysicalViolenceAlert", {
                 street = street or "Localização Desconhecida",
                 coords = coords
             })
@@ -343,7 +444,7 @@ CreateThread(function()
                 local s1 = GetStreetNameAtCoord(coords.x, coords.y, coords.z)
                 local street = GetStreetNameFromHashKey(s1)
 
-                TriggerServerEvent("myDispatch:CarAccidentAlert", {
+                TriggerServerEvent("nord_dispach:CarAccidentAlert", {
                     street = street or "Localização Desconhecida",
                     coords = coords
                 })
@@ -395,7 +496,7 @@ CreateThread(function()
                     local s1 = GetStreetNameAtCoord(coords.x, coords.y, coords.z)
                     local street = GetStreetNameFromHashKey(s1)
 
-                    TriggerServerEvent("myDispatch:ArmedRobberyAlert", {
+                    TriggerServerEvent("nord_dispach:ArmedRobberyAlert", {
                         street = street,
                         coords = coords
                     })
@@ -431,8 +532,8 @@ end
 ------------------------------------------------------
 -- 6. UNIDADE A CAMINHO
 ------------------------------------------------------
-RegisterNetEvent("myDispatch:UnitGoingToIncident")
-AddEventHandler("myDispatch:UnitGoingToIncident", function(id, unitCoords)
+RegisterNetEvent("nord_dispach:UnitGoingToIncident")
+AddEventHandler("nord_dispach:UnitGoingToIncident", function(id, unitCoords)
     if not unitCoords then return end
 
     local blip = AddBlipForCoord(unitCoords.x, unitCoords.y, unitCoords.z)
@@ -452,6 +553,12 @@ AddEventHandler("myDispatch:UnitGoingToIncident", function(id, unitCoords)
     SetTimeout(30000, function()
         RemoveBlip(blip)
     end)
+end)
+
+-- Compatibilidade legada
+RegisterNetEvent("myDispatch:UnitGoingToIncident")
+AddEventHandler("myDispatch:UnitGoingToIncident", function(id, unitCoords)
+    TriggerEvent("nord_dispach:UnitGoingToIncident", id, unitCoords)
 end)
 
 
@@ -481,5 +588,6 @@ end)
 RegisterNUICallback("popupClose", function(_, cb)
     dispatchPopupActive = false
     lastDispatchCoords = nil
+    dispatchPopupIncidentId = nil
     cb("ok")
 end)

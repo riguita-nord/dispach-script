@@ -1,5 +1,20 @@
 Config = Config or {}
 
+-- Framework mode: auto, qbcore, esx, standalone
+Config.Framework = "auto"
+
+--------------------------------------------------------
+-- Sistema de updates (server-side)
+--------------------------------------------------------
+Config.Updates = {
+    Enabled = true,
+    CheckOnStart = true,
+    CheckIntervalMinutes = 180,
+    CommandName = "dispatch_update",
+    -- URL que devolve a versão mais recente (JSON com {"version":"x.y.z"} ou texto simples "x.y.z")
+    VersionEndpoint = ""
+}
+
 -- ON / OFF da integração do dispatch com o Nord MDT
 Config.Dispatch_MDT_Enabled = true
 

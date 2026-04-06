@@ -1,5 +1,5 @@
 # 📡 Nord Dispatch System — Nord Lab  
-Intelligent Dispatch System for FiveM (QBCore)
+Intelligent Dispatch System for FiveM (QBCore / ESX / Standalone bridge)
 
 ---
 
@@ -13,8 +13,9 @@ Designed to complement any MDT or run independently, the dispatch provides:
 - Custom sounds  
 - Incident location on the map  
 - Integration with external scripts  
-- Full QBCore compatibility (100%)  
-- ESX support currently in development  
+- Full QBCore compatibility  
+- ESX compatibility via framework bridge  
+- Standalone fallback (no framework)  
 - For best performance and management features, using an MDT is recommended  
 
 Built with a focus on:
@@ -97,6 +98,29 @@ The dispatch shows **only the incident** on the map:
 
 ---
 
+## 🔄 Update System
+
+The resource now includes an update checker on the server side.
+
+Configuration is available in config.lua:
+
+- Config.Updates.Enabled
+- Config.Updates.CheckOnStart
+- Config.Updates.CheckIntervalMinutes
+- Config.Updates.CommandName
+- Config.Updates.VersionEndpoint
+
+Version endpoint formats accepted:
+
+- JSON: {"version":"1.2.0"}
+- Plain text: 1.2.0
+
+Manual check command (server console only):
+
+- dispatch_update
+
+---
+
 ### 💼 Credits
 
 - Developed by: **Nord Lab**  
@@ -110,11 +134,13 @@ The dispatch shows **only the incident** on the map:
 
 Any script can send alerts to the dispatch:
 
-### ➤ Send a custom alert
+### ➤ Send an alert from another server script
 ```lua
-TriggerEvent("nord_dispatch:add", {
-    type    = "custom",
-    msg     = "Suspicious activity detected",
-    coords  = vector3(100.2, -203.5, 54.1),
-    priority = 2
+TriggerEvent("nord_dispach:ExternalAlert", "shots_fired", {
+    street = "Vespucci Blvd",
+    coords = vector3(100.2, -203.5, 54.1),
+    info = {
+        msg = "Suspicious activity detected"
+    }
 })
+```
